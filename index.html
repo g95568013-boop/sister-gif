@@ -609,6 +609,10 @@
             cursor: not-allowed;
         }
 
+        .upload-save.loading {
+            background: #888;
+        }
+
         .upload-cancel {
             background: transparent;
             color: var(--text-light);
@@ -841,9 +845,75 @@
     <script>
         let currentFile = null;
 
-        // Загрузка фото из localStorage
+        // Фото по умолчанию (из imgbb)
+        const defaultPhotos = [
+            { src: 'https://i.ibb.co/C3G2qCnB/photo-2026-03-05-14-59-11.jpg', caption: 'Наши моменты' },
+            { src: 'https://i.ibb.co/3Js462d/photo-2026-03-05-14-59-12.jpg', caption: 'Наши моменты' },
+            { src: 'https://i.ibb.co/F4K9mDLV/photo-2026-03-05-14-59-14.jpg', caption: 'Наши моменты' },
+            { src: 'https://i.ibb.co/tPB0TCxz/photo-2026-03-05-14-59-15.jpg', caption: 'Наши моменты' },
+            { src: 'https://i.ibb.co/WGg66GBc/photo-2026-03-05-14-59-17.jpg', caption: 'Наши моменты' },
+            { src: 'https://i.ibb.co/LzVYYxsh/photo-2026-03-05-14-59-18.jpg', caption: 'Наши моменты' },
+            { src: 'https://i.ibb.co/xq9KXySz/photo-2026-03-05-14-59-20.jpg', caption: 'Наши моменты' },
+            { src: 'https://i.ibb.co/RFWQdvB/photo-2026-03-05-14-59-21.jpg', caption: 'Наши моменты' },
+            { src: 'https://i.ibb.co/sdbHy4vQ/photo-2026-03-05-14-59-22.jpg', caption: 'Наши моменты' },
+            { src: 'https://i.ibb.co/gbc1NxWs/photo-2026-03-05-14-59-24.jpg', caption: 'Наши моменты' },
+            { src: 'https://i.ibb.co/W4RpmkJ8/photo-2026-03-05-14-59-25.jpg', caption: 'Наши моменты' },
+            { src: 'https://i.ibb.co/KjGnzmYt/photo-2026-03-05-14-59-27.jpg', caption: 'Наши моменты' },
+            { src: 'https://i.ibb.co/pvnGsc4c/photo-2026-03-05-14-59-29.jpg', caption: 'Наши моменты' },
+            { src: 'https://i.ibb.co/VWgDmJyX/photo-2026-03-05-14-59-30.jpg', caption: 'Наши моменты' },
+            { src: 'https://i.ibb.co/wND9JgL8/photo-2026-03-05-14-59-32.jpg', caption: 'Наши моменты' },
+            { src: 'https://i.ibb.co/V0drn9rW/photo-2026-03-05-14-59-33.jpg', caption: 'Наши моменты' },
+            { src: 'https://i.ibb.co/p6rnVy0t/photo-2026-03-05-14-59-35.jpg', caption: 'Наши моменты' },
+            { src: 'https://i.ibb.co/F4vvXQWS/photo-2026-03-05-14-59-36.jpg', caption: 'Наши моменты' },
+            { src: 'https://i.ibb.co/9SbxmQJ/photo-2026-03-05-14-59-38.jpg', caption: 'Наши моменты' },
+            { src: 'https://i.ibb.co/35cmRXD9/photo-2026-03-05-14-59-39.jpg', caption: 'Наши моменты' },
+            { src: 'https://i.ibb.co/SzFfmC3/photo-2026-03-05-14-59-40.jpg', caption: 'Наши моменты' },
+            { src: 'https://i.ibb.co/F1fR31j/photo-2026-03-05-14-59-42.jpg', caption: 'Наши моменты' },
+            { src: 'https://i.ibb.co/9kzptmSv/photo-2026-03-05-14-59-44.jpg', caption: 'Наши моменты' },
+            { src: 'https://i.ibb.co/MDN2nt2c/photo-2026-03-05-14-59-45.jpg', caption: 'Наши моменты' },
+            { src: 'https://i.ibb.co/YrT9cVV/photo-2026-03-05-14-59-47.jpg', caption: 'Наши моменты' },
+            { src: 'https://i.ibb.co/JTTbd0T/photo-2026-03-05-14-59-48.jpg', caption: 'Наши моменты' },
+            { src: 'https://i.ibb.co/C3gqrQTh/photo-2026-03-05-14-59-49.jpg', caption: 'Наши моменты' },
+            { src: 'https://i.ibb.co/8n52SNWH/photo-2026-03-05-14-59-51.jpg', caption: 'Наши моменты' },
+            { src: 'https://i.ibb.co/2Ys5Tzr7/photo-2026-03-05-14-59-52.jpg', caption: 'Наши моменты' },
+            { src: 'https://i.ibb.co/S4DM4nrP/photo-2026-03-05-14-59-54.jpg', caption: 'Наши моменты' },
+            { src: 'https://i.ibb.co/04bLxVN/photo-2026-03-05-14-59-55.jpg', caption: 'Наши моменты' },
+            { src: 'https://i.ibb.co/x8gGyCJC/photo-2026-03-05-14-59-56.jpg', caption: 'Наши моменты' },
+            { src: 'https://i.ibb.co/xKvh2NgN/photo-2026-03-05-14-59-58.jpg', caption: 'Наши моменты' },
+            { src: 'https://i.ibb.co/LhNvhggn/photo-2026-03-05-15-00-00.jpg', caption: 'Наши моменты' }
+        ];
+
+        // Загрузка фото из URL или localStorage
         function loadPhotos() {
-            const photos = JSON.parse(localStorage.getItem('sisterGiftPhotos') || '[]');
+            let photos = [];
+            
+            // Сначала пробуем загрузить из URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const photosFromUrl = urlParams.get('photos');
+            
+            if (photosFromUrl) {
+                try {
+                    const decoded = atob(photosFromUrl);
+                    photos = JSON.parse(decoded);
+                    // Сохраняем в localStorage для локального доступа
+                    localStorage.setItem('sisterGiftPhotos', JSON.stringify(photos));
+                } catch (e) {
+                    console.log('Ошибка чтения URL');
+                }
+            }
+                    
+            // Если в URL нет, читаем из localStorage
+            if (photos.length === 0) {
+                const savedPhotos = localStorage.getItem('sisterGiftPhotos');
+                if (savedPhotos) {
+                    photos = JSON.parse(savedPhotos);
+                } else {
+                    // Используем фото по умолчанию
+                    photos = defaultPhotos;
+                    localStorage.setItem('sisterGiftPhotos', JSON.stringify(photos));
+                }
+            }
+                    
             const grid = document.getElementById('photoGrid');
             grid.innerHTML = '';
 
@@ -924,6 +994,7 @@
             document.getElementById('uploadPreview').classList.remove('show');
             document.getElementById('captionInput').value = '';
             document.getElementById('savePhotoBtn').disabled = true;
+            document.getElementById('savePhotoBtn').textContent = 'Сохранить';
             document.getElementById('fileInput').value = '';
         }
 
@@ -978,26 +1049,124 @@
             reader.readAsDataURL(file);
         }
 
-        // Сохранение фото
-        function savePhoto() {
+        // Сохранение фото на imgbb
+        async function savePhoto() {
             if (!currentFile) return;
 
             const caption = document.getElementById('captionInput').value.trim() || 'Момент с сестрой';
+            const saveBtn = document.getElementById('savePhotoBtn');
             
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                const photos = JSON.parse(localStorage.getItem('sisterGiftPhotos') || '[]');
-                photos.push({
-                    src: e.target.result,
-                    caption: caption
+            // Показываем загрузку
+            saveBtn.textContent = 'Загрузка...';
+            saveBtn.disabled = true;
+
+            try {
+                // Конвертируем файл в base64
+                const base64 = await new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = () => resolve(reader.result.split(',')[1]);
+                    reader.onerror = reject;
+                    reader.readAsDataURL(currentFile);
                 });
-                localStorage.setItem('sisterGiftPhotos', JSON.stringify(photos));
-                
-                closeUploadModal();
-                showToast();
-                loadPhotos();
-            };
-            reader.readAsDataURL(currentFile);
+
+                // Загружаем на imgbb
+                const formData = new FormData();
+                formData.append('key', '4a7f8339a2b071c6ce83d1e7a5ad56a7');
+                formData.append('image', base64);
+
+                const response = await fetch('https://api.imgbb.com/1/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // Сохраняем URL изображения в localStorage
+                    const photos = JSON.parse(localStorage.getItem('sisterGiftPhotos') || '[]');
+                    photos.push({
+                        src: data.data.url,
+                        caption: caption
+                    });
+                    localStorage.setItem('sisterGiftPhotos', JSON.stringify(photos));
+                    
+                    closeUploadModal();
+                    
+                    // Создаём новую ссылку с фото
+                    const photosJson = JSON.stringify(photos);
+                    const encoded = btoa(photosJson);
+                    const newUrl = window.location.origin + window.location.pathname + '?photos=' + encoded;
+                    
+                    // Показываем ссылку для копирования
+                    showShareLinkToast(newUrl);
+                    loadPhotos();
+                } else {
+                    throw new Error('Ошибка загрузки');
+                }
+            } catch (error) {
+                // Если не удалось загрузить на imgbb, сохраняем локально
+                console.log('imgbb не работает, сохраняем локально');
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const photos = JSON.parse(localStorage.getItem('sisterGiftPhotos') || '[]');
+                    photos.push({
+                        src: e.target.result,
+                        caption: caption
+                    });
+                    localStorage.setItem('sisterGiftPhotos', JSON.stringify(photos));
+                    
+                    closeUploadModal();
+                    showToast('Фото сохранено (локально)');
+                    loadPhotos();
+                    
+                    // Обновляем URL с новым фото
+                    updateUrlWithPhotos(photos);
+                };
+                reader.readAsDataURL(currentFile);
+            }
+        }
+
+        // Обновить URL с фото
+        function updateUrlWithPhotos(photos) {
+            try {
+                const photosJson = JSON.stringify(photos);
+                const encoded = btoa(photosJson);
+                const newUrl = window.location.origin + window.location.pathname + '?photos=' + encoded;
+                window.history.pushState({}, '', newUrl);
+            } catch (e) {
+                console.log('Не удалось обновить URL');
+            }
+        }
+
+        // Показать ссылку для шаринга
+        function showShareLinkToast(url) {
+            const toast = document.createElement('div');
+            toast.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;padding:20px;border-radius:15px;box-shadow:0 10px 40px rgba(0,0,0,0.2);z-index:5000;max-width:90%;text-align:center;';
+            toast.innerHTML = `
+                <p style="margin:0 0 15px 0;font-weight:600;">Ссылка с фото готова!</p>
+                <p style="font-size:0.8rem;color:#666;margin:0 0 15px 0;">Скопируй и отправь сестре:</p>
+                <input type="text" value="${url}" readonly style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:0.8rem;margin-bottom:15px;" onclick="this.select()">
+                <div style="display:flex;gap:10px;">
+                    <button onclick="copyToClipboard('${url}');this.closest('.share-toast').remove();" style="flex:1;padding:12px;background:#0088cc;color:white;border:none;border-radius:8px;cursor:pointer;">Скопировать</button>
+                    <button onclick="this.closest('.share-toast').remove()" style="flex:1;padding:12px;background:#eee;color:#333;border:none;border-radius:8px;cursor:pointer;">Закрыть</button>
+                </div>
+            `;
+            toast.className = 'share-toast';
+            document.body.appendChild(toast);
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showToast('Ссылка скопирована!');
+            }).catch(() => {
+                const input = document.createElement('input');
+                input.value = text;
+                document.body.appendChild(input);
+                input.select();
+                document.execCommand('copy');
+                document.body.removeChild(input);
+                showToast('Ссылка скопирована!');
+            });
         }
 
         function showToast() {

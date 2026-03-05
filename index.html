@@ -1,0 +1,1080 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>5 причин, почему ты лучшая сестра</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #FDFCFB;
+            --bg-secondary: #F7F5F3;
+            --text: #2D2D2D;
+            --text-light: #6B6B6B;
+            --accent: #C4A77D;
+            --accent-hover: #B08D5B;
+            --card-bg: #FFFFFF;
+            --shadow: 0 4px 20px rgba(0,0,0,0.06);
+            --shadow-hover: 0 8px 30px rgba(0,0,0,0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+            overflow-x: hidden;
+        }
+
+        button, .photo-card, .footer-btn, .footer-logo, .add-photo-card {
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Исправление для мобильных - все кликабельные элементы */
+        [ontouchend], .photo-card, .add-photo-card, .footer-logo {
+            touch-action: manipulation;
+        }
+
+        /* Обложка */
+        .cover {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 40px 20px;
+            background: linear-gradient(180deg, var(--bg) 0%, var(--bg-secondary) 100%);
+        }
+
+        .cover h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(1.8rem, 5vw, 2.8rem);
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 20px;
+            letter-spacing: -0.02em;
+        }
+
+        .cover p {
+            color: var(--text-light);
+            font-size: 1.1rem;
+            margin-bottom: 40px;
+            max-width: 400px;
+        }
+
+        .cover-btn {
+            padding: 16px 40px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            background: var(--text);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            letter-spacing: 0.02em;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .cover-btn:active {
+            transform: scale(0.96);
+            background: var(--accent);
+        }
+
+        .cover-btn:hover {
+            background: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        .scroll-hint {
+            position: absolute;
+            bottom: 40px;
+            color: var(--text-light);
+            font-size: 0.9rem;
+            animation: float 2s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(8px); }
+        }
+
+        /* Галерея */
+        .gallery {
+            padding: 80px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .gallery h2 {
+            font-family: 'Playfair Display', serif;
+            text-align: center;
+            font-size: 1.8rem;
+            margin-bottom: 50px;
+            font-weight: 600;
+        }
+
+        .photo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            align-items: start;
+        }
+
+        .photo-card {
+            position: relative;
+            border-radius: 16px;
+            overflow: hidden;
+            background: var(--card-bg);
+            box-shadow: var(--shadow);
+            transition: all 0.4s ease;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 200px;
+        }
+
+        .photo-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .photo-card img {
+            width: 100%;
+            height: auto;
+            max-height: 400px;
+            object-fit: contain;
+            display: block;
+        }
+
+        .photo-card .caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 15px;
+            background: rgba(0,0,0,0.5);
+            color: white;
+            font-size: 0.8rem;
+            text-align: center;
+        }
+
+        .photo-card .delete-btn {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            width: 28px;
+            height: 28px;
+            background: rgba(255,255,255,0.9);
+            color: var(--text);
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            opacity: 0;
+            transition: all 0.3s;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .photo-card:hover .delete-btn {
+            opacity: 1;
+        }
+
+        .photo-card .delete-btn:hover {
+            background: var(--accent);
+            color: white;
+        }
+
+        .add-photo-card {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border: 1.5px solid #E5E3E0;
+            background: var(--card-bg);
+            cursor: pointer;
+            transition: all 0.3s;
+            min-height: 200px;
+        }
+
+        .add-photo-card:hover {
+            border-color: var(--accent);
+            background: #FAFAFA;
+        }
+
+        .add-photo-card span {
+            font-size: 1.5rem;
+            color: var(--text-light);
+            margin-bottom: 8px;
+        }
+
+        .add-photo-card p {
+            color: var(--text-light);
+            font-size: 0.85rem;
+        }
+
+        /* Секции причин */
+        .reason-section {
+            padding: 100px 20px;
+            max-width: 700px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .reason-section:nth-child(even) {
+            background: var(--bg-secondary);
+        }
+
+        .reason-number {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: var(--accent);
+            margin-bottom: 16px;
+            font-weight: 500;
+        }
+
+        .reason-text {
+            font-size: clamp(1.1rem, 3vw, 1.5rem);
+            line-height: 1.8;
+            color: var(--text);
+        }
+
+        /* Секция спасибо */
+        .thanks-section {
+            min-height: 50vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 80px 20px;
+            background: var(--bg-secondary);
+        }
+
+        .thanks-btn {
+            padding: 20px 50px;
+            font-size: 1rem;
+            font-weight: 500;
+            background: var(--text);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .thanks-btn:hover {
+            background: var(--accent);
+            transform: scale(1.02);
+        }
+
+        /* Попап спасибо */
+        .thanks-popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(4px);
+        }
+
+        .thanks-popup.show {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .thanks-content {
+            background: white;
+            padding: 50px 40px;
+            border-radius: 24px;
+            text-align: center;
+            max-width: 90%;
+            animation: slideUp 0.4s ease;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .thanks-content h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+        }
+
+        .thanks-content p {
+            color: var(--text-light);
+        }
+
+        /* Конфетти */
+        .confetti {
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            top: -10px;
+            animation: confettiFall 3s linear forwards;
+            z-index: 999;
+            border-radius: 50%;
+        }
+
+        @keyframes confettiFall {
+            to {
+                top: 100vh;
+                transform: rotate(720deg);
+            }
+        }
+            
+        /* Футер */
+        footer {
+            background: var(--bg);
+            padding: 50px 20px;
+            text-align: center;
+            border-top: 1px solid #F0EEEC;
+        }
+
+        .footer-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+
+        .footer-btn {
+            padding: 12px 24px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            background: transparent;
+            color: var(--text);
+            border: 1px solid #E5E3E0;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .footer-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .footer-logo {
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: transform 0.3s;
+            display: inline-block;
+        }
+
+        .footer-logo:hover {
+            transform: rotate(15deg) scale(1.1);
+        }
+
+        .secret-message {
+            display: none;
+            margin-top: 20px;
+            padding: 20px;
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            font-size: 0.9rem;
+            color: var(--text-light);
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .secret-message.show {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+
+        .footer-credit {
+            margin-top: 30px;
+            font-size: 0.8rem;
+            color: var(--text-light);
+        }
+
+        /* Модальное окно для просмотра фото */
+        .photo-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            padding: 20px;
+        }
+
+        .photo-modal.show {
+            display: flex;
+            animation: fadeIn 0.3s;
+        }
+
+        .photo-modal img {
+            max-width: 100%;
+            max-height: 90vh;
+            object-fit: contain;
+            border-radius: 8px;
+        }
+
+        .photo-modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            background: white;
+            border: none;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .photo-modal-close:hover {
+            transform: scale(1.1);
+        }
+
+        /* Мобильная адаптация */
+        @media (max-width: 768px) {
+            .cover h1 {
+                font-size: 1.6rem;
+            }
+            
+            .photo-grid {
+                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+                gap: 12px;
+            }
+            
+            .reason-section {
+                padding: 60px 20px;
+            }
+            
+            .footer-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .footer-btn {
+                width: 200px;
+            }
+        }
+
+        /* Модальное окно загрузки фото */
+        .upload-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 3000;
+            backdrop-filter: blur(4px);
+            padding: 20px;
+        }
+
+        .upload-modal.show {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .upload-content {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 400px;
+            animation: slideUp 0.3s ease;
+        }
+
+        .upload-content h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4rem;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .upload-area-modal {
+            border: 1.5px dashed var(--accent);
+            border-radius: 12px;
+            padding: 30px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 20px;
+        }
+
+        .upload-area-modal:hover {
+            background: #FAFAFA;
+        }
+
+        .upload-area-modal p {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        .upload-preview {
+            display: none;
+            margin-bottom: 20px;
+        }
+
+        .upload-preview.show {
+            display: block;
+        }
+
+        .upload-preview img {
+            width: 100%;
+            max-height: 200px;
+            object-fit: contain;
+            border-radius: 10px;
+            background: var(--bg-secondary);
+        }
+
+        .upload-content input[type="text"] {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #E5E3E0;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-family: 'Inter', sans-serif;
+            margin-bottom: 20px;
+        }
+
+        .upload-content input[type="text"]:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .upload-content input[type="file"] {
+            display: none;
+        }
+
+        .upload-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .upload-buttons button {
+            flex: 1;
+            padding: 14px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .upload-save {
+            background: var(--text);
+            color: white;
+        }
+
+        .upload-save:hover {
+            background: var(--accent);
+        }
+
+        .upload-save:disabled {
+            background: #CCC;
+            cursor: not-allowed;
+        }
+
+        .upload-cancel {
+            background: transparent;
+            color: var(--text-light);
+            border: 1px solid #E5E3E0 !important;
+        }
+
+        .upload-cancel:hover {
+            border-color: var(--text-light) !important;
+        }
+
+        .success-toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--text);
+            color: white;
+            padding: 14px 24px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            z-index: 4000;
+            display: none;
+            animation: slideDown 0.3s;
+        }
+
+        .success-toast.show {
+            display: block;
+        }
+
+        /* Модальное окно поделиться */
+        .share-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 3000;
+            backdrop-filter: blur(4px);
+            padding: 20px;
+        }
+
+        .share-modal.show {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .share-content {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 350px;
+            animation: slideUp 0.3s ease;
+            text-align: center;
+        }
+
+        .share-content h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4rem;
+            margin-bottom: 25px;
+        }
+
+        .share-options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .share-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 14px 20px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: white;
+            text-decoration: none;
+        }
+
+        .share-btn:hover {
+            transform: translateY(-2px);
+            opacity: 0.9;
+        }
+
+        .share-telegram { background: #0088cc; }
+        .share-whatsapp { background: #25D366; }
+        .share-copy { background: var(--text); }
+        .share-close {
+            background: transparent;
+            color: var(--text-light);
+            border: 1px solid #E5E3E0;
+            margin-top: 10px;
+        }
+
+        .share-close:hover {
+            background: #f5f5f5;
+        }
+    </style>
+</head>
+<body>
+    <!-- Обложка -->
+    <section class="cover">
+        <h1>5 причин, почему ты лучшая сестра</h1>
+        <p>Моя любимая сестренка, это послание для тебя</p>
+        <button class="cover-btn" onclick="scrollToGallery()">Открыть подарок</button>
+        <div class="scroll-hint">листай вниз</div>
+    </section>
+
+    <!-- Галерея -->
+    <section class="gallery" id="gallery">
+        <h2>Наши моменты</h2>
+        <div class="photo-grid" id="photoGrid">
+        </div>
+    </section>
+
+    <!-- Причина 1 -->
+    <section class="reason-section">
+        <div class="reason-number">Причина 1</div>
+        <p class="reason-text">Ты такая красивая, что я иногда ловлю себя на мысли: «А мы точно родные?»</p>
+    </section>
+
+    <!-- Причина 2 -->
+    <section class="reason-section">
+        <div class="reason-number">Причина 2</div>
+        <p class="reason-text">Твоя доброта — это как смена режимов в Minecraft: то мирный режим, то хардкор.</p>
+    </section>
+
+    <!-- Причина 3 -->
+    <section class="reason-section">
+        <div class="reason-number">Причина 3</div>
+        <p class="reason-text">Ты умеешь превратить обычный день в что-то особенное — без лишних слов и объявлений.</p>
+    </section>
+
+    <!-- Причина 4 -->
+    <section class="reason-section">
+        <div class="reason-number">Причина 4</div>
+        <p class="reason-text">Ты — тот человек, на которого можно положиться, даже когда всё идёт не по плану.</p>
+    </section>
+
+    <!-- Причина 5 -->
+    <section class="reason-section">
+        <div class="reason-number">Причина 5</div>
+        <p class="reason-text">Твой стиль вождения — это две крайности: «какая прекрасная погода для поездки» и «да куда ты прёшь, я сейчас…»</p>
+    </section>
+
+    <!-- Секция спасибо -->
+    <section class="thanks-section">
+        <button class="thanks-btn" onclick="showThanks()">Спасибо, сестрёнка</button>
+    </section>
+
+    <!-- Попап спасибо -->
+    <div class="thanks-popup" id="thanksPopup" onclick="closeThanks(event)">
+        <div class="thanks-content">
+            <h2>Спасибо, что ты есть!</h2>
+            <p>Ты самая лучшая сестра</p>
+        </div>
+    </div>
+
+    <!-- Модальное окно фото -->
+    <div class="photo-modal" id="photoModal" onclick="closeModal(event)">
+        <button class="photo-modal-close" onclick="closePhotoModal()">×</button>
+        <img id="modalImg" src="" alt="Фото">
+    </div>
+
+    <!-- Модальное окно загрузки фото -->
+    <div class="upload-modal" id="uploadModal">
+        <div class="upload-content">
+            <h3>Добавить фото</h3>
+            <div class="upload-preview" id="uploadPreview">
+                <img id="previewImg" src="" alt="Предпросмотр">
+            </div>
+            <div class="upload-area-modal" id="uploadAreaModal">
+                <p>Нажми или перетащи фото</p>
+            </div>
+            <input type="file" id="fileInput" accept="image/*">
+            <input type="text" id="captionInput" placeholder="Подпись (например: Лето 2023)">
+            <div class="upload-buttons">
+                <button class="upload-cancel" onclick="closeUploadModal()">Отмена</button>
+                <button class="upload-save" id="savePhotoBtn" onclick="savePhoto()" disabled>Сохранить</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Уведомление -->
+    <div class="success-toast" id="successToast">Фото сохранено</div>
+
+    <!-- Модальное окно поделиться -->
+    <div class="share-modal" id="shareModal">
+        <div class="share-content">
+            <h3>Поделиться</h3>
+            <div class="share-options">
+                <a href="#" class="share-btn share-telegram" id="shareTelegram">
+                    <span>✈️</span> Telegram
+                </a>
+                <a href="#" class="share-btn share-whatsapp" id="shareWhatsApp">
+                    <span>💬</span> WhatsApp
+                </a>
+                <button class="share-btn share-copy" onclick="copyLink()">
+                    <span>📋</span> Копировать ссылку
+                </button>
+                <button class="share-btn share-close" onclick="closeShareModal()">Отмена</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Футер -->
+    <footer>
+        <div class="footer-buttons">
+            <button class="footer-btn" onclick="openUploadModal()">Добавить фото</button>
+            <button class="footer-btn" onclick="openShareModal()">Поделиться</button>
+        </div>
+        <div class="footer-logo" onclick="showSecret()">♥</div>
+        <div class="secret-message" id="secretMessage">
+            Секретная шутка: Почему сестры такие умные? Потому что они учатся на ошибках своих братьев!
+        </div>
+        <div class="footer-credit">
+            Сделано с любовью
+        </div>
+    </footer>
+
+    <script>
+        let currentFile = null;
+
+        // Загрузка фото из localStorage
+        function loadPhotos() {
+            const photos = JSON.parse(localStorage.getItem('sisterGiftPhotos') || '[]');
+            const grid = document.getElementById('photoGrid');
+            grid.innerHTML = '';
+
+            photos.forEach((photo, index) => {
+                const card = document.createElement('div');
+                card.className = 'photo-card';
+                card.style.cssText = 'position:relative;border-radius:16px;overflow:hidden;background:#fff;box-shadow:0 4px 20px rgba(0,0,0,0.06);min-height:200px;display:flex;align-items:center;justify-content:center;cursor:pointer;';
+                
+                // Универсальный обработчик
+                const openModal = function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (e.target.classList.contains('delete-btn')) return;
+                    openPhotoModal(photo.src);
+                };
+                
+                // Только click событие - оно работает и на мобильных
+                card.onclick = openModal;
+                
+                card.innerHTML = `
+                    <img src="${photo.src}" alt="Фото" style="width:100%;height:auto;max-height:400px;object-fit:contain;display:block;">
+                    <div class="caption" style="position:absolute;bottom:0;left:0;right:0;padding:15px;background:rgba(0,0,0,0.5);color:white;font-size:0.8rem;text-align:center;">${photo.caption}</div>
+                    <button class="delete-btn" data-index="${index}" style="position:absolute;top:12px;right:12px;width:28px;height:28px;background:rgba(255,255,255,0.9);color:#2D2D2D;border:none;border-radius:50%;cursor:pointer;font-size:1rem;">×</button>
+                `;
+                
+                // Удаление
+                const delBtn = card.querySelector('.delete-btn');
+                delBtn.onclick = function(e) {
+                    e.stopPropagation();
+                    deletePhoto(index);
+                };
+                
+                grid.appendChild(card);
+            });
+
+            // Добавляем карточку добавления фото
+            const addCard = document.createElement('div');
+            addCard.className = 'photo-card add-photo-card';
+            addCard.style.cssText = 'display:flex;flex-direction:column;justify-content:center;align-items:center;border:1.5px solid #E5E3E0;background:#fff;cursor:pointer;min-height:200px;';
+            addCard.onclick = openUploadModal;
+            addCard.innerHTML = `<span style="font-size:1.5rem;color:#6B6B6B;margin-bottom:8px;">+</span><p style="color:#6B6B6B;font-size:0.85rem;">Добавить</p>`;
+            grid.appendChild(addCard);
+        }
+
+        // Удаление фото
+        function deletePhoto(index) {
+            const photos = JSON.parse(localStorage.getItem('sisterGiftPhotos') || '[]');
+            photos.splice(index, 1);
+            localStorage.setItem('sisterGiftPhotos', JSON.stringify(photos));
+            loadPhotos();
+        }
+
+        // Скролл к галерее
+        function scrollToGallery() {
+            document.getElementById('gallery').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Модальное окно фото
+        function openPhotoModal(src) {
+            document.getElementById('modalImg').src = src;
+            document.getElementById('photoModal').classList.add('show');
+        }
+
+        function closePhotoModal() {
+            document.getElementById('photoModal').classList.remove('show');
+        }
+
+        function closeModal(event) {
+            if (event.target.classList.contains('photo-modal')) {
+                closePhotoModal();
+            }
+        }
+
+        // Модальное окно загрузки
+        function openUploadModal() {
+            document.getElementById('uploadModal').classList.add('show');
+            currentFile = null;
+            document.getElementById('uploadPreview').classList.remove('show');
+            document.getElementById('captionInput').value = '';
+            document.getElementById('savePhotoBtn').disabled = true;
+            document.getElementById('fileInput').value = '';
+        }
+
+        function closeUploadModal() {
+            document.getElementById('uploadModal').classList.remove('show');
+        }
+
+        // Обработка загрузки файла
+        const fileInput = document.getElementById('fileInput');
+        const uploadAreaModal = document.getElementById('uploadAreaModal');
+        
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length) {
+                handleFile(e.target.files[0]);
+            }
+        });
+
+        uploadAreaModal.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        uploadAreaModal.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadAreaModal.style.background = '#FAFAFA';
+        });
+
+        uploadAreaModal.addEventListener('dragleave', () => {
+            uploadAreaModal.style.background = '';
+        });
+
+        uploadAreaModal.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadAreaModal.style.background = '';
+            if (e.dataTransfer.files.length) {
+                handleFile(e.dataTransfer.files[0]);
+            }
+        });
+
+        function handleFile(file) {
+            if (!file.type.startsWith('image/')) {
+                alert('Выберите изображение');
+                return;
+            }
+
+            currentFile = file;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                document.getElementById('previewImg').src = e.target.result;
+                document.getElementById('uploadPreview').classList.add('show');
+                document.getElementById('savePhotoBtn').disabled = false;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Сохранение фото
+        function savePhoto() {
+            if (!currentFile) return;
+
+            const caption = document.getElementById('captionInput').value.trim() || 'Момент с сестрой';
+            
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const photos = JSON.parse(localStorage.getItem('sisterGiftPhotos') || '[]');
+                photos.push({
+                    src: e.target.result,
+                    caption: caption
+                });
+                localStorage.setItem('sisterGiftPhotos', JSON.stringify(photos));
+                
+                closeUploadModal();
+                showToast();
+                loadPhotos();
+            };
+            reader.readAsDataURL(currentFile);
+        }
+
+        function showToast() {
+            const toast = document.getElementById('successToast');
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2500);
+        }
+
+        // Показать спасибо
+        function showThanks() {
+            document.getElementById('thanksPopup').classList.add('show');
+            createConfetti();
+        }
+
+        function closeThanks(event) {
+            if (event.target.classList.contains('thanks-popup')) {
+                document.getElementById('thanksPopup').classList.remove('show');
+            }
+        }
+
+        // Конфетти
+        function createConfetti() {
+            const colors = ['#C4A77D', '#8B7355', '#D4C4A8', '#A69076', '#E8DCC8'];
+            for (let i = 0; i < 40; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                confetti.style.animationDelay = Math.random() * 0.5 + 's';
+                document.body.appendChild(confetti);
+                setTimeout(() => confetti.remove(), 4000);
+            }
+        }
+
+        // Поделиться - открыть модальное окно
+        function openShareModal() {
+            document.getElementById('shareModal').classList.add('show');
+            updateShareLinks();
+        }
+
+        function closeShareModal() {
+            document.getElementById('shareModal').classList.remove('show');
+        }
+
+        function updateShareLinks() {
+            const url = encodeURIComponent(window.location.href);
+            const text = encodeURIComponent('Смотри, какой подарок я для тебя сделал! 🎁');
+            
+            document.getElementById('shareTelegram').href = `https://t.me/share/url?url=${url}&text=${text}`;
+            document.getElementById('shareWhatsApp').href = `https://wa.me/?text=${text}%20${url}`;
+        }
+
+        function copyLink() {
+            navigator.clipboard.writeText(window.location.href).then(() => {
+                showToast('Ссылка скопирована!');
+                closeShareModal();
+            }).catch(() => {
+                // Резервный метод
+                const input = document.createElement('input');
+                input.value = window.location.href;
+                document.body.appendChild(input);
+                input.select();
+                document.execCommand('copy');
+                document.body.removeChild(input);
+                showToast('Ссылка скопирована!');
+                closeShareModal();
+            });
+        }
+
+        // Секрет
+        function showSecret() {
+            document.getElementById('secretMessage').classList.toggle('show');
+        }
+
+        // Инициализация - загружаем фото с небольшой задержкой
+        setTimeout(loadPhotos, 100);
+    </script>
+</body>
+</html>
